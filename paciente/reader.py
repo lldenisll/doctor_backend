@@ -2,6 +2,8 @@ import pydicom
 from datetime import datetime
 import glob
 import json
+from PIL import Image
+import matplotlib.pyplot as plt
 
 def get_paciente_info():
     exames = glob.glob("../dicoms/*")
@@ -32,11 +34,17 @@ def get_paciente_info():
         json.dump(datajson, f)
 
 
-def get_imagem_exame(pasta):
-    pass
-    # files=glob.glob("../dicoms/0fjeqffgptvghl67enh9768ja0gr1cxa/*.dcm")
-# for file in files:
-#     ds = pydicom.dcmread(file, force=True)
-#     print(ds.SliceThickness)
+def get_imagem_exame():
+    exames = glob.glob("../dicoms/*")
+    extensao = "/*000001.dcm"
+    pixel_array = []
+    for exame in exames:
+        resultado = glob.glob(exame+extensao)
+        ds = pydicom.dcmread(resultado[0], force=True)
+        pixel_array.append(ds.pixel_array)
+        plt.imshow(ds.pixel_array,plt.cm.bone)
+        plt.savefig('../img/'+ds.PatientID+'.png')
+    
 
-get_paciente_info()
+
+get_imagem_exame()
